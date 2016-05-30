@@ -75,3 +75,13 @@ class YColorRect(YRect):
 										 self.c.a)
 									  )
 									 )
+
+class YImageRect(YRect):
+
+	def __init__(self, x, y, w, h, c: path):
+		YRect.__init__(self, x, y, w, h)
+		self.path = path	
+		self.image = pyglet.image.load(self.path)
+
+	def draw(self):
+		pass

@@ -247,33 +247,3 @@ class Y2DRenderer:
 			elif self.point_of_origin == BOTTOM_RIGHT_CORNER:
 				o.x = o.x + (self.screen_width - o.w)
 			o.draw()
-
-class YActor:
-	
-	def __init__(self, x, y, width, height, image):
-		self.x = x
-		self.y = y
-		self.width = width
-		self.height = height
-		self.angle = 0
-		self.size = 1
-		self.image = pyglet.image.load(image)
-		x = width/2.0
-		y = height/2.0
-		self.vlist = pyglet.graphics.vertex_list(4, ('v2f', [-x, -y, x, -y, -x, y, x, y]), ('t2f', [0, 0, 1, 0, 0, 1, 1, 1]))
-		
-	def draw(self):
-		pyglet.gl.glPushMatrix()
-		pyglet.gl.glTranslatef(self.x + self.width/2, self.y - self.height/2, 0)
-		pyglet.gl.glRotatef(self.angle, 0, 0, 1)
-		pyglet.gl.glScalef(self.size, self.size, self.size)
-		pyglet.gl.glColor3f(1,1,1)
-		pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
-		pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-		pyglet.gl.glEnable(pyglet.gl.GL_TEXTURE_2D)
-		pyglet.gl.glBindTexture(pyglet.gl.GL_TEXTURE_2D, self.image.get_texture().id)
-		pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_LINEAR)
-		pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_LINEAR)
-		self.vlist.draw(pyglet.gl.GL_TRIANGLE_STRIP)
-		pyglet.gl.glDisable(pyglet.gl.GL_TEXTURE_2D)
-		pyglet.gl.glPopMatrix()
