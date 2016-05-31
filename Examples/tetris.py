@@ -26,7 +26,7 @@ from Yurei import core, geometry
 
 if __name__ == '__main__':
 	app = core.YApp()
-	a = geometry.YColorRect(0, 0, 233, 100, core.YColor(255, 0, 0))
+	a = geometry.YColorRect(0, 0, 233, 100, core.YColor(255, 130, 222, 40))
 	r = core.Y2DRenderer(app, [a], core.TOP_LEFT_CORNER)
 		
 	app + (lambda: r.draw())

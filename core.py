@@ -182,11 +182,19 @@ class YData(YSerializable):
 
 class YColor:
 	
-	def __init__(self, r, g, b, a=255):
-		self.r = r
-		self.g = g
-		self.b = b
-		self.a = a
+	def __init__(self, *args):
+		if len(args) == 1:
+			self.r = args[0][0]
+			self.g = args[0][1]
+			self.b = args[0][2]
+		elif len(args) >= 3:
+			self.r = args[0]
+			self.g = args[1]
+			self.b = args[2]
+		if len(args) == 4:
+			self.a = args[3]
+		else:
+			self.a = 255
 
 class YApp(YData, pyglet.window.Window):
 
