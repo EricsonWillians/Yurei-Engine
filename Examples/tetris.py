@@ -25,9 +25,11 @@
 from Yurei import core, geometry
 
 if __name__ == '__main__':
-	app = core.YApp()
-	a = geometry.YColorRect(0, 0, 233, 100, core.YColor(255, 130, 222, 40))
-	r = core.Y2DRenderer(app, [a], core.TOP_LEFT_CORNER)
+	w = core.YWindow()
+	a = geometry.YColorRect(0, 0, 200, 200, core.YColor(core.RED))
+	i = geometry.YImageRect(0, 0, 400, 400, "GFX/brick.jpg")
+	r = core.Y2DRenderer(w, [a], core.BOTTOM_LEFT_CORNER)
+	w.set_renderer(r)
 		
-	app + (lambda: r.draw())
-	app()
+	w + (2, (lambda x: print("yep")))
+	w()

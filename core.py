@@ -196,7 +196,7 @@ class YColor:
 		else:
 			self.a = 255
 
-class YApp(YData, pyglet.window.Window):
+class YWindow(YData, pyglet.window.Window):
 
 	def __init__(self, screen_width=1024, screen_height=768, fullscreen=False, locked_mouse=False):
 		YData.__init__(self, "config.yur")
@@ -210,18 +210,32 @@ class YApp(YData, pyglet.window.Window):
 		pyglet.window.Window.__init__(self, self.data["SCREEN_WIDTH"], self.data["SCREEN_HEIGHT"], fullscreen=self.data["FULLSCREEN"])
 		if self.data["LOCKED_MOUSE"]:
 			self.set_exclusive_mouse()
-		self.on_draw_procedures = []
+		self.renderer = None
+		self.procedures = {}
 	
 	def __add__(self, other):
-		self.on_draw_procedures.append(other)
-	
+		if len(other) == 2:
+			self.procedures[other[0]] = other[1]
+		else:
+			print("The argument for __add__ must be a tuple with 2 elements in the following format: (dt, f)")
+			sys.exit()
+		
 	def __call__(self):
+		for p in self.procedures:
+			pyglet.clock.schedule_interval(self.procedures[p], p)
 		pyglet.app.run()
+		
+
+	def set_renderer(self, r):
+		self.renderer = r
 
 	def on_draw(self):
 		self.clear()
-		if self.on_draw_procedures:
-			for p in self.on_draw_procedures: p()
+		if self.renderer:
+			self.renderer.draw()
+		else:
+			print("The app has no renderer associated with it.")
+			sys.exit()
 
 	def on_key_press(self, key, modifiers):
 		if key == pyglet.window.key.UP or key == pyglet.window.key.W:
@@ -232,8 +246,6 @@ class YApp(YData, pyglet.window.Window):
 			pass
 		elif key == pyglet.window.key.RIGHT or key == pyglet.window.key.D:
 			pass
-
-	# pyglet.clock.schedule_interval(snake.move, snake.speed, food, snake_map.data)
 
 class Y2DRenderer:
 	
