@@ -35,14 +35,23 @@ class YRect:
 		self.w = w
 		self.h = h
 
+
 class YColorRect(YRect):
 
 	def __init__(self, x, y, w, h, c: core.YColor):
 		YRect.__init__(self, x, y, w, h)
-		self.c = core.ycheck(c, core.YColor, "Error: The color object must be an instance of YColor.")		
+		self.c = core.ycheck(
+			c,
+			core.YColor,
+			"Error: The color object must be an instance of YColor.")
 
 	def draw(self):
+		pyglet.gl.glPushMatrix()
 		pyglet.gl.glTranslatef(self.x, self.y, 0)
+		pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+		pyglet.gl.glBlendFunc(
+			pyglet.gl.GL_SRC_ALPHA,
+			pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 		pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
 									 [0, 1, 2, 0, 2, 3],
 									 ("v2i", (
@@ -74,19 +83,59 @@ class YColorRect(YRect):
 										 self.c.a)
 									  )
 									 )
+		pyglet.gl.glPopMatrix()
+
 
 class YImageRect(YRect):
 
 	def __init__(self, x, y, w, h, path):
 		YRect.__init__(self, x, y, w, h)
-		self.path = path	
+		self.path = path
 		self.image = pyglet.image.load(self.path)
-		# self.vlist = pyglet.graphics.vertex_list(4, ('v2f', [-x, -y, x, -y, -x, y, x, y]), ('t2f', [0, 0, 1, 0, 0, 1, 1, 1]))
 
 	def draw(self):
+		pyglet.gl.glPushMatrix()
+		pyglet.gl.glTranslatef(self.x, self.y, 0)
 		pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
-		pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+		pyglet.gl.glBlendFunc(
+			pyglet.gl.GL_SRC_ALPHA,
+			pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 		pyglet.gl.glEnable(pyglet.gl.GL_TEXTURE_2D)
-		pyglet.gl.glBindTexture(pyglet.gl.GL_TEXTURE_2D, self.image.get_texture().id)
-		pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_LINEAR)
-		pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_LINEAR)
+		pyglet.gl.glBindTexture(
+			pyglet.gl.GL_TEXTURE_2D,
+			self.image.get_texture().id)
+		pyglet.gl.glTexParameteri(
+			pyglet.gl.GL_TEXTURE_2D,
+			pyglet.gl.GL_TEXTURE_MAG_FILTER,
+			pyglet.gl.GL_LINEAR)
+		pyglet.gl.glTexParameteri(
+			pyglet.gl.GL_TEXTURE_2D,
+			pyglet.gl.GL_TEXTURE_MIN_FILTER,
+			pyglet.gl.GL_LINEAR)
+		pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES, [
+										0, 
+										1, 
+										2, 
+										0, 
+										2, 
+										3
+									], ("v2i", (
+										 0,
+										 0,
+										 0,
+										 self.h,
+										 self.w,
+										 self.h,
+										 self.w,
+										 0
+									)), ("t2f", [
+										0, 
+										0, 
+										1, 
+										0, 
+										0, 
+										1, 
+										1, 
+										1
+									]))
+		pyglet.gl.glPopMatrix()

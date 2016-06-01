@@ -82,6 +82,8 @@ SILVER = (192, 192, 192)
 TEAL = (VOID , 128, 128)
 WHITE = (VIVID, VIVID, VIVID)
 YELLOW = (VIVID, VIVID, VOID)
+CYAN = (VOID, VIVID, VIVID)
+MAGENTA = (VIVID, VOID, VIVID)
 
 COLORS = [
 	AQUA, 
@@ -224,7 +226,6 @@ class YWindow(YData, pyglet.window.Window):
 		for p in self.procedures:
 			pyglet.clock.schedule_interval(self.procedures[p], p)
 		pyglet.app.run()
-		
 
 	def set_renderer(self, r):
 		self.renderer = r
@@ -250,20 +251,24 @@ class YWindow(YData, pyglet.window.Window):
 class Y2DRenderer:
 	
 	def __init__(self, window, yobject_list, point_of_origin=TOP_LEFT_CORNER):
+		self.window = window
 		self.screen_width = window.data["SCREEN_WIDTH"]
 		self.screen_height = window.data["SCREEN_HEIGHT"]
 		self.yobject_list = yobject_list
 		self.point_of_origin = point_of_origin
 		
 	def draw(self):
+		# self.window.clear()
 		for o in self.yobject_list:
 			if self.point_of_origin == TOP_LEFT_CORNER:
-				o.y = o.y + (self.screen_height - o.h)
+				o.y = ((self.screen_height - o.h) - o.y)
 			elif self.point_of_origin == TOP_RIGHT_CORNER:
-				o.y = o.y + (self.screen_height - o.h)
-				o.x = o.x + (self.screen_width - o.w)
+				o.y = ((self.screen_height - o.h) - o.y)
+				o.x = ((self.screen_width - o.w) - o.x)
 			elif self.point_of_origin == BOTTOM_LEFT_CORNER:
 				pass
 			elif self.point_of_origin == BOTTOM_RIGHT_CORNER:
-				o.x = o.x + (self.screen_width - o.w)
+				o.x = ((self.screen_width - o.w) - o.x)
 			o.draw()
+			
+		

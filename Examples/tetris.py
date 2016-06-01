@@ -24,12 +24,23 @@
 
 from Yurei import core, geometry
 
+class GameArea:
+	
+	def __init__(self):
+		self.area = [
+			geometry.YColorRect(core.VOID, core.VOID, 512, 32, core.YColor(core.WHITE)),
+			geometry.YColorRect(core.VOID, core.VOID, 32, 768, core.YColor(core.WHITE)),
+			geometry.YColorRect(512-32, core.VOID, 32, 768, core.YColor(core.WHITE)),
+			geometry.YColorRect(core.VOID, 768-32, 512, 32, core.YColor(core.WHITE))
+		]
+
+	def __call__(self):
+		return self.area
+
 if __name__ == '__main__':
 	w = core.YWindow()
-	a = geometry.YColorRect(0, 0, 200, 200, core.YColor(core.RED))
-	i = geometry.YImageRect(0, 0, 400, 400, "GFX/brick.jpg")
-	r = core.Y2DRenderer(w, [a], core.BOTTOM_LEFT_CORNER)
+	game_area = GameArea()
+	r = core.Y2DRenderer(w, game_area(), core.TOP_LEFT_CORNER)
 	w.set_renderer(r)
-		
-	w + (2, (lambda x: print("yep")))
+
 	w()

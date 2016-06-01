@@ -22,5 +22,14 @@
 #  
 #  
 
-pass
+import pyglet
+from Yurei import core, geometry
 
+class YLabel(pyglet.text.Label):
+	
+	def __init__(text='', font_name=None, font_size=None, bold=False, italic=False, color=(255, 255, 255, 255), x=0, y=0, width=None, height=None, anchor_x='left', anchor_y='baseline', align='left', multiline=False, dpi=None, batch=None, group=None):
+		if isinstance(color, core.YColor):
+			self.color = (color.r, color.g, color.b, color.a)
+		else:
+			self.color = color
+		pyglet.text.Label.__init__(text, font_name, font_size, bold, italic, self.color, x, y, width, height, anchor_x, anchor_y, align, multiline, dpi, batch, group)
