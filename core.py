@@ -84,6 +84,7 @@ WHITE = (VIVID, VIVID, VIVID)
 YELLOW = (VIVID, VIVID, VOID)
 CYAN = (VOID, VIVID, VIVID)
 MAGENTA = (VIVID, VOID, VIVID)
+ORANGE = (VIVID, 165, VOID)
 
 COLORS = [
 	AQUA, 
@@ -231,22 +232,11 @@ class YWindow(YData, pyglet.window.Window):
 		self.renderer = r
 
 	def on_draw(self):
-		self.clear()
 		if self.renderer:
 			self.renderer.draw()
 		else:
 			print("The app has no renderer associated with it.")
 			sys.exit()
-
-	def on_key_press(self, key, modifiers):
-		if key == pyglet.window.key.UP or key == pyglet.window.key.W:
-			print("Yep!")
-		elif key == pyglet.window.key.DOWN or key == pyglet.window.key.S:
-			pass
-		elif key == pyglet.window.key.LEFT or key == pyglet.window.key.A:
-			pass
-		elif key == pyglet.window.key.RIGHT or key == pyglet.window.key.D:
-			pass
 
 class Y2DRenderer:
 	
@@ -256,9 +246,11 @@ class Y2DRenderer:
 		self.screen_height = window.data["SCREEN_HEIGHT"]
 		self.yobject_list = yobject_list
 		self.point_of_origin = point_of_origin
-		
+	
+	def __add__(self, other):
+		self.yobject_list.append(other)
+	
 	def draw(self):
-		# self.window.clear()
 		for o in self.yobject_list:
 			if self.point_of_origin == TOP_LEFT_CORNER:
 				o.y = ((self.screen_height - o.h) - o.y)
