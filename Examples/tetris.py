@@ -38,6 +38,36 @@ PIECE_SIZE = 16
 HEIGHT_LIMIT = 47
 LINE_SIZE = 23
 
+pieces = {
+	'I': [
+		[1, 1, 1, 1]
+	],
+	'J': [
+		[2, 2, 2],
+		[0, 0, 2]
+	],
+	'L': [
+		[3, 3, 3],
+		[3, 0, 0]
+	],
+	'O': [
+		[4, 4],
+		[4, 4]
+	],
+	'S': [
+		[0, 5, 5],
+		[5, 5, 0]
+	],
+	'T': [
+		[6, 6, 6],
+		[0, 6, 0]
+	],
+	'Z': [
+		[7, 7, 0],
+		[0, 7, 7]
+	]
+}
+
 class GameArea:
 	
 	def __init__(self):
@@ -53,72 +83,56 @@ class GameArea:
 
 class GameGrid:
 	
-	def __init__(self):
-		pass
-		
-class GamePiece:
+	def __init__(self, renderer):
+		self.r = renderer
+		self.grid = []
+		self.positions = []
+		for y in range(PIECE_SIZE, GAME_AREA_HEIGHT, PIECE_SIZE):
+			row = []
+			row_pos = []
+			for x in range(PIECE_SIZE, GAME_AREA_WIDTH, PIECE_SIZE):
+				row.append(0)
+				row_pos.append((x, y))
+			self.grid.append(row)
+			self.positions.append(row_pos)
 	
-	def __init__(self, piece):
-		if piece == 'I':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.CYAN)),
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.CYAN)),
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*3, PIECE_SIZE, PIECE_SIZE, core.YColor(core.CYAN)),
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*4, PIECE_SIZE, PIECE_SIZE, core.YColor(core.CYAN))
-			]
-		elif piece == 'J':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.BLUE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.BLUE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.BLUE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.BLUE))
-			]
-		elif piece == 'L':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.ORANGE)),
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.ORANGE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.ORANGE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.ORANGE))
-			]
-		elif piece == 'O':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.YELLOW)),
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.YELLOW)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.YELLOW)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.YELLOW))
-			]
-		elif piece == 'S':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.LIME)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.LIME)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.LIME)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.LIME))
-			]
-		elif piece == 'T':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.PURPLE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.PURPLE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.PURPLE)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.PURPLE))
-			]
-		elif piece == 'Z':
-			self.data = [
-				geometry.YColorRect(GAME_AREA_CENTER, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.RED)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, core.YColor(core.RED)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.RED)),
-				geometry.YColorRect(GAME_AREA_CENTER + PIECE_SIZE*2, PIECE_SIZE*2, PIECE_SIZE, PIECE_SIZE, core.YColor(core.RED))
-			]
-
+	def draw(self):
+		for i in range(len(self.grid)):
+			for j in range(len(self.grid[i])):
+				if self.grid[i][j] == 1:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.CYAN)).draw()
+				elif self.grid[i][j] == 2:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.BLUE)).draw()
+				elif self.grid[i][j] == 3:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.ORANGE)).draw()
+				elif self.grid[i][j] == 4:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.YELLOW)).draw()
+				elif self.grid[i][j] == 5:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.LIME)).draw()
+				elif self.grid[i][j] == 6:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.PURPLE)).draw()
+				elif self.grid[i][j] == 7:
+					pos = self.r.translate(self.positions[i][j][0], self.positions[i][j][1], PIECE_SIZE, PIECE_SIZE)
+					geometry.YColorRect(pos[0], pos[1], PIECE_SIZE, PIECE_SIZE, core.YColor(core.RED)).draw()
+					
 	def __call__(self):
-		return self.data
+		return self.grid
 
 if __name__ == '__main__':
 	w = core.YWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
 	game_area = GameArea()
-	i = GamePiece('Z')
 	r = core.Y2DRenderer(w, game_area(), core.TOP_LEFT_CORNER)
-	[r + p for p in i()]
-	w.set_renderer(r)
+	grid = GameGrid(r)
+	@w.event
+	def on_draw():
+		r.draw()
+		grid.draw()
 	w()
 """
 	@w.event

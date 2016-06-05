@@ -213,7 +213,6 @@ class YWindow(YData, pyglet.window.Window):
 		pyglet.window.Window.__init__(self, self.data["SCREEN_WIDTH"], self.data["SCREEN_HEIGHT"], fullscreen=self.data["FULLSCREEN"])
 		if self.data["LOCKED_MOUSE"]:
 			self.set_exclusive_mouse()
-		self.renderer = None
 		self.procedures = {}
 	
 	def __add__(self, other):
@@ -228,19 +227,9 @@ class YWindow(YData, pyglet.window.Window):
 			pyglet.clock.schedule_interval(self.procedures[p], p)
 		pyglet.app.run()
 
-	def set_renderer(self, r):
-		self.renderer = r
-
-	def on_draw(self):
-		if self.renderer:
-			self.renderer.draw()
-		else:
-			print("The app has no renderer associated with it.")
-			sys.exit()
-
 class Y2DRenderer:
 	
-	def __init__(self, window, yobject_list, point_of_origin=TOP_LEFT_CORNER):
+	def __init__(self, window, yobject_list, point_of_origin):
 		self.window = window
 		self.screen_width = window.data["SCREEN_WIDTH"]
 		self.screen_height = window.data["SCREEN_HEIGHT"]
@@ -249,6 +238,16 @@ class Y2DRenderer:
 	
 	def __add__(self, other):
 		self.yobject_list.append(other)
+	
+	def translate(self, x, y, w, h):
+		if self.point_of_origin == TOP_LEFT_CORNER:
+			return (x, ((self.screen_height - h) - y), w, h)
+		elif self.point_of_origin == TOP_RIGHT_CORNER:
+			return (((self.screen_width - w) - x), ((self.screen_height - h) - y), w, h)
+		elif self.point_of_origin == BOTTOM_LEFT_CORNER:
+			return (x, y, w, h)
+		elif self.point_of_origin == BOTTOM_RIGHT_CORNER:
+			return (((self.screen_width - w) - x), y, w, h)
 	
 	def draw(self):
 		for o in self.yobject_list:
@@ -262,5 +261,3 @@ class Y2DRenderer:
 			elif self.point_of_origin == BOTTOM_RIGHT_CORNER:
 				o.x = ((self.screen_width - o.w) - o.x)
 			o.draw()
-			
-		
