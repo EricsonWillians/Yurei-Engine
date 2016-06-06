@@ -24,6 +24,7 @@
 
 import pyglet
 from Yurei import core, geometry
+from random import sample
 
 # 480 / 10 = 48
 # 736 / 16 = 46
@@ -33,10 +34,10 @@ SCREEN_HEIGHT = 768
 GAME_AREA_BORDER = 16
 GAME_AREA_WIDTH = 368
 GAME_AREA_HEIGHT = 752
-GAME_AREA_CENTER = 184
 PIECE_SIZE = 16
 HEIGHT_LIMIT = 47
 LINE_SIZE = 23
+MATRIX_CENTER = 10
 
 pieces = {
 	'I': [
@@ -95,6 +96,36 @@ class GameGrid:
 				row_pos.append((x, y))
 			self.grid.append(row)
 			self.positions.append(row_pos)
+		self.current_piece = []
+	
+	def spawn(self):
+		random_piece = sample(list(pieces), 1)
+		self.current_piece = []
+		if len(pieces[random_piece[0]]) == 1:
+			for n in range(len(pieces[random_piece[0]][0])):
+				self.grid[0][MATRIX_CENTER + n] = pieces[random_piece[0]][0][n]
+				self.current_piece.append(self.positions[0][MATRIX_CENTER + n])
+		elif len(pieces[random_piece[0]]) == 2:
+			for n in range(len(pieces[random_piece[0]][0])):
+				self.grid[0][MATRIX_CENTER + n] = pieces[random_piece[0]][0][n]
+				self.grid[1][MATRIX_CENTER + n] = pieces[random_piece[0]][1][n]
+				self.current_piece.append(self.positions[0][MATRIX_CENTER + n])
+				self.current_piece.append(self.positions[1][MATRIX_CENTER + n])
+	
+	def move(self, _dir):
+		for p in self.current_piece:
+			for row in range(len(self.positions)):
+				for column in range(len(self.positions[row])):
+					if self.positions[row][column] == p:
+						previous = self.grid[row][column]
+						self.grid[row][column] = 0
+						if _dir == 0:
+							self.grid[row][column-1] = previous
+							self.current_piece[self.current_piece.index(p)] = (self.current_piece[self.current_piece.index(p)][0]-PIECE_SIZE, self.current_piece[self.current_piece.index(p)][1])
+						elif _dir == 1:
+							self.grid[row][column+1] = previous
+							self.current_piece[self.current_piece.index(p)] = (self.current_piece[self.current_piece.index(p)][0]+PIECE_SIZE, self.current_piece[self.current_piece.index(p)][1])
+				print(self.grid[row])
 	
 	def draw(self):
 		for i in range(len(self.grid)):
@@ -129,12 +160,14 @@ if __name__ == '__main__':
 	game_area = GameArea()
 	r = core.Y2DRenderer(w, game_area(), core.TOP_LEFT_CORNER)
 	grid = GameGrid(r)
+	grid.spawn()
+
 	@w.event
 	def on_draw():
+		w.clear()
 		r.draw()
 		grid.draw()
-	w()
-"""
+		
 	@w.event
 	def on_key_press(key, modifiers):
 		if key == pyglet.window.key.UP or key == pyglet.window.key.W:
@@ -142,8 +175,7 @@ if __name__ == '__main__':
 		elif key == pyglet.window.key.DOWN or key == pyglet.window.key.S:
 			pass
 		elif key == pyglet.window.key.LEFT or key == pyglet.window.key.A:
-			pass
+			grid.move(0)
 		elif key == pyglet.window.key.RIGHT or key == pyglet.window.key.D:
-			pass
-"""
-	
+			grid.move(1)
+	w()
